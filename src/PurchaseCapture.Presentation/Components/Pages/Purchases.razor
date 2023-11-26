@@ -1,0 +1,45 @@
+﻿@page "/Purchases"
+@using PurchaseCapture.Application.Interfaces.Queries
+@using PurchaseCapture.Application.Purchases
+
+@rendermode InteractiveServer
+@inject IQuery<PurchaseModel> PurchaseQuery;
+
+<h3>Purchases</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Item</th>
+            <th>Amount</th>
+            <th>Total Price</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var purchase in _purchases)
+        {
+            <tr>
+                <td>@purchase.Customer.FullName</td>
+                <td>@purchase.Item.Name</td>
+                <td>@purchase.Amount</td>
+                <td>@purchase.Item.GetTotalPrice(purchase.Amount)</td>
+                <td>@purchase.CreationTime</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private readonly List<PurchaseModel> _purchases = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _purchases.Clear();
+        _purchases.AddRange(PurchaseQuery.GetAll());
+    }
+}

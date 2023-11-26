@@ -1,0 +1,59 @@
+﻿@page "/NewPurchase"
+@using PurchaseCapture.Application.Purchases
+@using PurchaseCapture.Application.Customers
+@using PurchaseCapture.Application.Interfaces.Commands
+@using PurchaseCapture.Application.Items
+
+@rendermode InteractiveServer
+@inject ICommand<PurchaseModel> PurchaseCommand;
+
+<h3>Purchases</h3>
+
+<div class="text-success">
+    @_message
+</div>
+
+<EditForm FormName="PurchaseForm" Model="@_model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="firstname">Customer First Name</label> <br />
+        <InputText id="firstname" @bind-Value="_model.Customer.FirstName" />
+        <ValidationMessage For="() => _model.Customer.FirstName" />
+    </div>
+
+    <div class="form-group">
+        <label for="lastname">Customer Last Name</label> <br />
+        <InputText id="lastname" @bind-Value="_model.Customer.LastName" />
+        <ValidationMessage For="() => _model.Customer.LastName" />
+    </div>
+
+    <div class="form-group">
+        <label for="itemname">Item Name</label> <br />
+        <InputText id="itemname" @bind-Value="_model.Item.Name" />
+        <ValidationMessage For="() => _model.Item.Name" />
+    </div>
+
+    <div class="form-group">
+        <label for="amount">Amount</label> <br />
+        <InputNumber id="amount" @bind-Value="_model.Amount" />
+        <ValidationMessage For="() => _model.Amount" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private string _message = string.Empty;
+    private readonly PurchaseModel _model = new()
+    {
+        Customer = new CustomerModel(),
+        Item = new ItemModel()
+    };
+
+    private async Task HandleValidSubmit()
+    {
+        await PurchaseCommand.Execute(_model);
+        _message = "Purchase added";
+    }
+}
